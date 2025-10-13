@@ -106,8 +106,8 @@ ram.runtime = "200M"
     # This will automatically install/uninstall the following apt packages
     packages = "python3-venv, python3-dev, python3-pip, python3-setuptools, libffi-dev, libssl-dev, par2, unzip, p7zip-full, software-properties-common"
     
-    # Additional packages from non-free repository
-    extras.non_free.repo = "deb http://deb.debian.org/debian __DEBIAN_VERSION__ non-free"
+    # Additional packages from non-free repository  
+    extras.non_free.repo = "deb http://deb.debian.org/debian bookworm non-free"
     extras.non_free.key = ""
     extras.non_free.packages = ["unrar"]
 
