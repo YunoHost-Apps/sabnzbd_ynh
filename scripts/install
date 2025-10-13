@@ -182,6 +182,7 @@ cat > "$data_dir/config.ini" << EOF
 host = 127.0.0.1
 port = $port
 host_whitelist = $domain
+url_base = $path
 complete_dir = $data_dir/complete
 download_dir = $data_dir/incomplete
 admin_dir = $data_dir/admin
