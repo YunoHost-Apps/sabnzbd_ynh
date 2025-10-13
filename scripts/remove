@@ -54,8 +54,7 @@ fi
 # Remove unrar if it was installed by this app
 if command -v unrar >/dev/null 2>&1; then
     ynh_script_progression --message="Removing unrar..." --weight=1
-    apt-get remove -y unrar
-    apt-get autoremove -y
+    ynh_remove_extra_app_dependencies
 fi
 
 # Note: Logs are not removed on app removal to preserve them in case of upgrade failures
