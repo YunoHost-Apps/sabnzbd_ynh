@@ -51,7 +51,8 @@ if [ -f "/usr/bin/par2.original" ]; then
     ynh_print_info "Original par2 restored"
 fi
 
-ynh_secure_remove --file="/var/log/$app"
+# Note: Logs are not removed on app removal to preserve them in case of upgrade failures
+# ynh_secure_remove --file="/var/log/$app"
 
 #=================================================
 # END OF SCRIPT

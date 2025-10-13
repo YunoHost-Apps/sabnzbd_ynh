@@ -9,44 +9,26 @@ description.fr = "Le lecteur de news binaire gratuit et simple pour télécharge
 
 version = "4.5.3~ynh1"
 
-maintainers = ["hazzamyman"]
+maintainers = ["bowgartfield"]
 
 [upstream]
 license = "GPL-2.0"
 website = "https://sabnzbd.org"
-logo = "logo.png"
-#demo = "https://demo.example.com"
 admindoc = "https://sabnzbd.org/wiki/"
 userdoc = "https://sabnzbd.org/wiki/"
 code = "https://github.com/sabnzbd/sabnzbd"
-# FIXME: optional but recommended if relevant, this is meant to contain the Common Platform Enumeration, which is
-# sort of a standard id for applications defined by the NIST. In particular, YunoHost may use this is in the future
-# to easily track CVE (=security reports) related to apps. The CPE may be obtained by searching here:
-# https://nvd.nist.gov/products/cpe/search.
-# For example, for Nextcloud, the CPE is 'cpe:2.3:a:nextcloud:nextcloud' (no need to include the version number)
 cpe = "cpe:2.3:a:sabnzbd:sabnzbd"
-
-# FIXME: optional but recommended (or remove if irrelevant / not applicable).
-# This is meant to be an URL where people can financially support this app, especially when its development is based
-# on volunteers and/or financed by its community. YunoHost may later advertise it in the webadmin.
-fund = "https://sabnzbd.org/donate"
+fund = "https://sabnzbd.org/donate/"
 
 [integration]
 yunohost = ">= 11.1.21"
 architectures = ["amd64", "armhf", "arm64"]
 multi_instance = true
 
-# FIXME: replace with true, false, or "not_relevant".
-# Not to confuse with the "sso" key: the "ldap" key corresponds to wether or not a user *can* login on the app using
-# its YunoHost credentials.
 ldap = false
 
-# FIXME: replace with true, false, or "not_relevant".
-# Not to confuse with the "ldap" key: the "sso" key corresponds to wether or not a user is *automatically logged-in*
-# on the app when logged-in on the YunoHost portal.
 sso = false
 
-# FIXME: replace with an **estimate** minimum disk and RAM requirements. e.g. 20M, 400M, 1G...
 disk = "100M"
 ram.build = "100M"
 ram.runtime = "200M"
@@ -125,8 +107,6 @@ ram.runtime = "200M"
     # and implicitly define the $phpversion setting as 8.0 (if phpX.Y-foobar dependencies are listed)
     packages = "python3-venv, python3-dev, python3-pip, python3-setuptools, libffi-dev, libssl-dev, par2, unzip, p7zip-full, software-properties-common, unrar"
 
-    # Enable non-free and contrib repositories
-    extra_repo = "deb http://deb.debian.org/debian __DEBIAN_VERSION__ contrib non-free"
     #[resources.database]
     # This will automatically provision/deprovison a MySQL DB and store the corresponding credentials in settings $db_user, $db_name, $db_pwd
     #type = "mysql"
