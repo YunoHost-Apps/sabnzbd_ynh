@@ -7,7 +7,7 @@ name = "SABnzbd"
 description.en = "The Free and easy binary newsreader for downloading, verifying and extracting files from Usenet"
 description.fr = "Le lecteur de news binaire gratuit et simple pour télécharger, vérifier et extraire des fichiers depuis Usenet"
 
-version = "4.1.0~ynh1"
+version = "4.5.2~ynh1"
 
 maintainers = ["hazzamyman"]
 
