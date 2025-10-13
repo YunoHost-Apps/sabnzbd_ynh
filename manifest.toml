@@ -122,15 +122,14 @@ ram.runtime = "200M"
     [resources.apt]
     # This will automatically install/uninstall the following apt packages
     # and implicitly define the $phpversion setting as 8.0 (if phpX.Y-foobar dependencies are listed)
-    packages = "python3-venv, python3-dev, python3-pip, python3-setuptools, libffi-dev, libssl-dev, par2, unzip, p7zip-full"
+    packages = "python3-venv, python3-dev, python3-pip, python3-setuptools, libffi-dev, libssl-dev, par2, unzip, p7zip-full, software-properties-common"
+
+    # First enable non-free repo, then install unrar
     packages_from_raw_bash = """
-        # Install software-properties-common to manage repositories
-        apt install software-properties-common -y && \
-        # Enable non-free and contrib repositories
-        apt-add-repository contrib non-free && \
-        apt update && \
-        # Install unrar from non-free repository
-        apt install unrar -y
+    apt-add-repository non-free -y;
+    apt-add-repository contrib -y;
+    apt update;
+    apt install unrar -y
     """
     #[resources.database]
     # This will automatically provision/deprovison a MySQL DB and store the corresponding credentials in settings $db_user, $db_name, $db_pwd
