@@ -44,6 +44,10 @@ ynh_script_progression --message="Setting up source files..." --weight=1
 # Download, check integrity, uncompress and patch the source from manifest.toml
 ynh_setup_source --dest_dir="$install_dir"
 
+# Create required directories
+mkdir -p "$data_dir"
+mkdir -p "/var/log/$app"
+
 # $install_dir will automatically be initialized with some decent 
 # permission by default ... however, you may need to recursively reapply
 # ownership to all files such as after the ynh_setup_source step
@@ -94,7 +98,7 @@ ynh_add_systemd_config
 ###		- As well as the section "INTEGRATE SERVICE IN YUNOHOST" in the restore script
 ###		- And the section "INTEGRATE SERVICE IN YUNOHOST" in the upgrade script
 
-yunohost service add $app --description="sabnzbd" --log="/var/log/$app/$app.log"
+yunohost service add $app --description="SABnzbd Usenet Client" --log="/var/log/$app/$app.log"
 
 ### Additional options starting with 3.8:
 ###
@@ -121,7 +125,7 @@ yunohost service add $app --description="sabnzbd" --log="/var/log/$app/$app.log"
 ###		- And the section "SETUP LOGROTATE" in the upgrade script
 
 # Use logrotate to manage application logfile(s)
-ynh_use_logrotate
+ynh_use_logrotate --logfile="/var/log/$app/$app.log"
 
 # Create a dedicated Fail2Ban config
 #ynh_add_fail2ban_config --logpath="/var/log/nginx/${domain}-error.log" --failregex="Regex to match into the log for a failed login"
@@ -258,17 +262,24 @@ ynh_local_curl "/INSTALL_PATH" "key1=value1" "key2=value2" "key3=value3"
 #=================================================
 # GENERIC FINALIZATION
 #=================================================
+# SET PERMISSIONS
+#=================================================
+ynh_script_progression --message="Setting up permissions..." --weight=1
+
+# Set permissions
+chown -R $app:www-data "$install_dir"
+chown -R $app:www-data "$data_dir"
+chown -R $app:www-data "/var/log/$app"
+
+chmod 750 "$install_dir"
+chmod -R o-rwx "$install_dir"
+chmod -R 750 "$data_dir"
+chmod -R 750 "/var/log/$app"
+
+#=================================================
 # START SYSTEMD SERVICE
 #=================================================
-ynh_script_progression --message="Starting a systemd service..." --weight=1
-
-### `ynh_systemd_action` is used to start a systemd service for an app.
-### Only needed if you have configure a systemd service
-### If you're not using these lines:
-###		- Remove the section "STOP SYSTEMD SERVICE" and "START SYSTEMD SERVICE" in the backup script
-###		- As well as the section "START SYSTEMD SERVICE" in the restore script
-###		- As well as the section"STOP SYSTEMD SERVICE" and "START SYSTEMD SERVICE" in the upgrade script
-###		- And the section "STOP SYSTEMD SERVICE" and "START SYSTEMD SERVICE" in the change_url script
+ynh_script_progression --message="Starting SABnzbd service..." --weight=1
 
 # Start a systemd service
 ynh_systemd_action --service_name=$app --action="start" --log_path="/var/log/$app/$app.log"
@@ -277,3 +288,26 @@ ynh_systemd_action --service_name=$app --action="start" --log_path="/var/log/$ap
 # END OF SCRIPT
 #=================================================
 ynh_script_progression --message="Installation of $app completed" --last
+
+#=================================================
+# PYTHON VIRTUALENV SETUP
+#=================================================
+ynh_script_progression --message="Setting up Python virtualenv..." --weight=3
+
+# Create virtualenv
+python3 -m venv "$install_dir/venv"
+
+# Activate virtualenv and install dependencies
+pushd "$install_dir"
+    # Upgrade pip and install wheel
+    "$install_dir/venv/bin/pip" install --upgrade pip wheel setuptools
+
+    # Install build dependencies for sabctools
+    ynh_package_install python3-dev python3-setuptools libffi-dev libssl-dev
+
+    # Install all Python dependencies
+    "$install_dir/venv/bin/pip" install --no-cache-dir -r requirements.txt
+
+    # Enable multi-language support
+    "$install_dir/venv/bin/python3" tools/make_mo.py
+popd
