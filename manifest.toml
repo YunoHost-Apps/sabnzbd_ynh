@@ -95,8 +95,8 @@ ram.runtime = "200M"
         # This will pre-fetch the asset which can then be deployed during the install/upgrade scripts with :
         #    ynh_setup_source --dest_dir="$install_dir"
         # You can also define other assets than "main" and add --source_id="foobar" in the previous command
-        url = "https://github.com/sabnzbd/sabnzbd/releases/download/4.1.0/SABnzbd-4.1.0-src.tar.gz"
-        sha256 = "24cdc711a9a9425b65b53dd5c084f78cc0f6d978c5c712481b7031751d569588"
+        url = "https://github.com/sabnzbd/sabnzbd/releases/download/4.5.2/SABnzbd-4.5.2-src.tar.gz"
+        sha256 = "c1867f35597c6f1b4235c9a478f3c67545a2b9d7d3df8404a21f70f921d5f644"
         autoupdate.strategy = "latest_github_release"
 
     [resources.system_user]
