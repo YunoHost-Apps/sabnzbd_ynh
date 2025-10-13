@@ -51,11 +51,7 @@ if [ -f "/usr/bin/par2.original" ]; then
     ynh_print_info "Original par2 restored"
 fi
 
-# Remove unrar if it was installed by this app
-if command -v unrar >/dev/null 2>&1; then
-    ynh_script_progression --message="Removing unrar..." --weight=1
-    ynh_remove_extra_app_dependencies
-fi
+# unrar is now managed automatically via manifest.toml resources.apt.extras.non_free
 
 # Note: Logs are not removed on app removal to preserve them in case of upgrade failures
 # ynh_secure_remove --file="/var/log/$app"

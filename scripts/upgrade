@@ -124,16 +124,7 @@ then
     popd
 fi
 
-#=================================================
-# ENSURE UNRAR IS INSTALLED
-#=================================================
-if ! command -v unrar >/dev/null 2>&1; then
-    ynh_script_progression --message="Installing unrar from non-free repository..." --weight=1
-    
-    # Install unrar from non-free repository using YunoHost helper
-    debian_version=$(lsb_release -cs)
-    ynh_install_extra_app_dependencies --repo="deb http://deb.debian.org/debian $debian_version non-free" --package="unrar" --key=""
-fi
+# unrar is now managed automatically via manifest.toml resources.apt.extras.non_free
 
 #=================================================
 # START SYSTEMD SERVICE

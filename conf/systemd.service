@@ -17,25 +17,25 @@ StandardError=inherit
 Restart=on-failure
 RestartSec=5
 
-# Sandboxing options for security hardening
+# Sandboxing options for security hardening (relaxed for compatibility)
 ProtectSystem=strict
-ReadWritePaths=__DATA_DIR__ /var/log/__APP__
+ReadWritePaths=__DATA_DIR__ /var/log/__APP__ /tmp
 PrivateTmp=yes
-PrivateDevices=yes
+#PrivateDevices=yes
 RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
-RestrictNamespaces=yes
+#RestrictNamespaces=yes
 RestrictRealtime=yes
-DevicePolicy=closed
+#DevicePolicy=closed
 ProtectClock=yes
 ProtectHostname=yes
-ProtectProc=invisible
+#ProtectProc=invisible
 ProtectControlGroups=yes
 ProtectKernelModules=yes
 ProtectKernelTunables=yes
 LockPersonality=yes
-SystemCallArchitectures=native
-SystemCallFilter=@system-service
-SystemCallFilter=~@privileged @resources
+#SystemCallArchitectures=native
+#SystemCallFilter=@system-service
+#SystemCallFilter=~@privileged @resources
 
 CapabilityBoundingSet=~CAP_RAWIO CAP_MKNOD
 CapabilityBoundingSet=~CAP_AUDIT_CONTROL CAP_AUDIT_READ CAP_AUDIT_WRITE
