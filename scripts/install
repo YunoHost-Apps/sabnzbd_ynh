@@ -93,7 +93,18 @@ ynh_add_systemd_config
 
 # Use logrotate to manage application logfile(s)
 ynh_use_logrotate --logfile="/var/log/$app/$app.log"
-chmod 644 "/var/log/$app/$app.log" || true  # Don't fail if file doesn't exist yet
+
+# Ensure log directory and file exist with correct ownership and permissions
+mkdir -p "/var/log/$app"
+chown -R $app:$app "/var/log/$app"
+chmod -R 770 "/var/log/$app" # rwxrwx--- for app user and group
+
+# Explicitly create log file if it doesn't exist and set permissions
+if [ ! -f "/var/log/$app/$app.log" ]; then
+    touch "/var/log/$app/$app.log"
+fi
+chown $app:$app "/var/log/$app/$app.log"
+chmod 660 "/var/log/$app/$app.log" # rw-rw---- for app user and group
 
 yunohost service add $app --description="SABnzbd Usenet Client" --log="/var/log/$app/$app.log"
 
