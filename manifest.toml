@@ -130,15 +130,12 @@ ram.runtime = "50M"
     # This will automatically install/uninstall the following apt packages
     # and implicitly define the $phpversion setting as 8.0 (if phpX.Y-foobar dependencies are listed)
     packages = "python3-venv, python3-dev, python3-pip, par2"
-
-    extras.unrar.repo = "contrib non-free"
-    extras.unrar.packages = ["unrar"]
-
-    #packages_from_raw_bash = """
-    #    if [[ "$phpversion" != none ]]; then
-    #        echo "php${phpversion}-fpm"
-    #    fi
-    #"""
+    packages_from_raw_bash = """
+        sudo apt install software-properties-common -y && \
+        sudo apt-add-repository contrib non-free && \
+        sudo apt update && \
+        sudo apt install unrar
+    """
     #[resources.database]
     # This will automatically provision/deprovison a MySQL DB and store the corresponding credentials in settings $db_user, $db_name, $db_pwd
     #type = "mysql"
