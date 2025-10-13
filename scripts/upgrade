@@ -127,6 +127,21 @@ fi
 # unrar is now managed automatically via manifest.toml resources.apt.extras.non_free
 
 #=================================================
+# ENSURE LOG DIRECTORY EXISTS
+#=================================================
+# Ensure log directory and file exist with correct permissions
+mkdir -p "/var/log/$app"
+chown -R $app:$app "/var/log/$app"
+chmod -R 770 "/var/log/$app"
+
+# Create log file if it doesn't exist
+if [ ! -f "/var/log/$app/$app.log" ]; then
+    touch "/var/log/$app/$app.log"
+fi
+chown $app:$app "/var/log/$app/$app.log"
+chmod 660 "/var/log/$app/$app.log"
+
+#=================================================
 # START SYSTEMD SERVICE
 #=================================================
 ynh_script_progression --message="Starting a systemd service..." --weight=1
