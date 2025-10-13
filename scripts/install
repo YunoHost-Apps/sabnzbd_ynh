@@ -48,10 +48,15 @@ ynh_setup_source --dest_dir="$install_dir"
 mkdir -p "$data_dir"
 mkdir -p "/var/log/$app"
 
-# $install_dir will automatically be initialized with some decent 
-# permission by default ... however, you may need to recursively reapply
-# ownership to all files such as after the ynh_setup_source step
-chown -R $app:www-data "$install_dir"
+# Fix permissions early
+chown -R $app:$app "$install_dir"
+chown -R $app:$app "$data_dir"
+chown -R $app:$app "/var/log/$app"
+
+chmod 750 "$install_dir"
+chmod -R o-rwx "$install_dir"
+chmod -R 750 "$data_dir"
+chmod -R 770 "/var/log/$app"
 
 #=================================================
 # PYTHON VIRTUALENV SETUP
@@ -60,23 +65,20 @@ ynh_script_progression --message="Setting up Python virtualenv..." --weight=3
 
 # Create virtualenv and install dependencies
 pushd "$install_dir"
-    # Create and activate virtualenv
-    python3 -m venv venv
+    # Create virtualenv as the app user
+    sudo -u $app python3 -m venv venv
     
-    # Upgrade pip and install wheel
-    ./venv/bin/pip install --upgrade pip wheel setuptools
+    # Upgrade pip and install wheel as the app user
+    sudo -u $app ./venv/bin/pip install --upgrade pip wheel setuptools
     
-    # Install all Python dependencies
-    ./venv/bin/pip install -r requirements.txt
+    # Install all Python dependencies as the app user
+    sudo -u $app ./venv/bin/pip install -r requirements.txt
     
     # Enable multi-language support if needed
     if [ -f "tools/make_mo.py" ]; then
-        ./venv/bin/python3 tools/make_mo.py
+        sudo -u $app ./venv/bin/python3 tools/make_mo.py
     fi
 popd
-
-# Fix permissions for the virtualenv
-chown -R $app:$app "$install_dir/venv"
 
 #=================================================
 # SYSTEM CONFIGURATION
@@ -91,6 +93,7 @@ ynh_add_systemd_config
 
 # Use logrotate to manage application logfile(s)
 ynh_use_logrotate --logfile="/var/log/$app/$app.log"
+chmod 644 "/var/log/$app/$app.log" || true  # Don't fail if file doesn't exist yet
 
 yunohost service add $app --description="SABnzbd Usenet Client" --log="/var/log/$app/$app.log"
 
@@ -111,12 +114,17 @@ complete_dir = $data_dir/complete
 download_dir = $data_dir/incomplete
 admin_dir = $data_dir/admin
 log_dir = /var/log/$app
+permissions = 0770
 EOF
 
 # Create necessary directories
 mkdir -p "$data_dir/complete"
 mkdir -p "$data_dir/incomplete"
 mkdir -p "$data_dir/admin"
+
+# Fix permissions again
+chown -R $app:$app "$data_dir"
+chmod -R 770 "$data_dir"
 
 #=================================================
 # YUNOHOST MULTIMEDIA INTEGRATION
@@ -127,21 +135,6 @@ ynh_script_progression --message="Adding multimedia directories..." --weight=6
 ynh_multimedia_build_main_dir
 
 ynh_multimedia_addfolder --source_dir="$data_dir" --dest_dir="share/Usenets"
-
-#=================================================
-# SET PERMISSIONS
-#=================================================
-ynh_script_progression --message="Setting up permissions..." --weight=1
-
-# Set permissions
-chown -R $app:www-data "$install_dir"
-chown -R $app:www-data "$data_dir"
-chown -R $app:www-data "/var/log/$app"
-
-chmod 750 "$install_dir"
-chmod -R o-rwx "$install_dir"
-chmod -R 750 "$data_dir"
-chmod -R 750 "/var/log/$app"
 
 #=================================================
 # START SYSTEMD SERVICE
