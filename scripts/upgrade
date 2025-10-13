@@ -124,24 +124,22 @@ then
     popd
 fi
 
+# unrar is now managed automatically via manifest.toml resources.apt.extras.non_free
+
 #=================================================
-# ENSURE UNRAR IS INSTALLED
+# ENSURE LOG DIRECTORY EXISTS
 #=================================================
-if ! command -v unrar >/dev/null 2>&1; then
-    ynh_script_progression --message="Installing unrar from non-free repository..." --weight=1
-    
-    # Add non-free repository temporarily to install unrar
-    debian_version=$(lsb_release -cs)
-    echo "deb http://deb.debian.org/debian $debian_version non-free" > /etc/apt/sources.list.d/non-free-temp.list
-    
-    # Update package list and install unrar
-    apt-get update
-    apt-get install -y unrar
-    
-    # Remove temporary repository file
-    rm -f /etc/apt/sources.list.d/non-free-temp.list
-    apt-get update
+# Ensure log directory and file exist with correct permissions
+mkdir -p "/var/log/$app"
+chown -R $app:$app "/var/log/$app"
+chmod -R 770 "/var/log/$app"
+
+# Create log file if it doesn't exist
+if [ ! -f "/var/log/$app/$app.log" ]; then
+    touch "/var/log/$app/$app.log"
 fi
+chown $app:$app "/var/log/$app/$app.log"
+chmod 660 "/var/log/$app/$app.log"
 
 #=================================================
 # START SYSTEMD SERVICE

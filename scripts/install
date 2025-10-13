@@ -116,17 +116,20 @@ if [ -n "$par2_arch" ]; then
         
         # Download and install par2cmdline-turbo
         pushd "$tmpdir"
-            wget -q "$par2_url" -O par2cmdline-turbo.xz
-            xz -d par2cmdline-turbo.xz
-            chmod +x par2cmdline-turbo
-            
-            # Backup original par2 and install turbo version
-            if [ -f /usr/bin/par2 ]; then
-                mv /usr/bin/par2 /usr/bin/par2.original
+            if wget -q "$par2_url" -O par2cmdline-turbo.xz; then
+                xz -d par2cmdline-turbo.xz
+                chmod +x par2cmdline-turbo
+                
+                # Backup original par2 and install turbo version
+                if [ -f /usr/bin/par2 ]; then
+                    mv /usr/bin/par2 /usr/bin/par2.original
+                fi
+                mv par2cmdline-turbo /usr/bin/par2
+                
+                ynh_print_info "par2cmdline-turbo v${par2_version} installed successfully"
+            else
+                ynh_print_warn "Failed to download par2cmdline-turbo, keeping standard par2"
             fi
-            mv par2cmdline-turbo /usr/bin/par2
-            
-            ynh_print_info "par2cmdline-turbo v${par2_version} installed successfully"
         popd
     else
         ynh_print_warn "Could not determine latest par2cmdline-turbo version, keeping standard par2"
@@ -136,22 +139,7 @@ fi
 # Clean up
 ynh_secure_remove --file="$tmpdir"
 
-#=================================================
-# INSTALL UNRAR FROM NON-FREE REPOSITORY
-#=================================================
-ynh_script_progression --message="Installing unrar from non-free repository..." --weight=1
-
-# Add non-free repository temporarily to install unrar
-debian_version=$(lsb_release -cs)
-echo "deb http://deb.debian.org/debian $debian_version non-free" > /etc/apt/sources.list.d/non-free-temp.list
-
-# Update package list and install unrar
-apt-get update
-apt-get install -y unrar
-
-# Remove temporary repository file
-rm -f /etc/apt/sources.list.d/non-free-temp.list
-apt-get update
+# unrar is now installed automatically via manifest.toml resources.apt.extras.non_free
 
 #=================================================
 # SYSTEM CONFIGURATION
@@ -167,17 +155,17 @@ ynh_add_systemd_config
 # Use logrotate to manage application logfile(s)
 ynh_use_logrotate --logfile="/var/log/$app/$app.log"
 
-# Ensure log directory and file exist with correct ownership and permissions
+# Ensure log directory and file exist with correct permissions
 mkdir -p "/var/log/$app"
 chown -R $app:$app "/var/log/$app"
-chmod -R 770 "/var/log/$app" # rwxrwx--- for app user and group
+chmod -R 770 "/var/log/$app"
 
-# Explicitly create log file if it doesn't exist and set permissions
+# Create log file if it doesn't exist
 if [ ! -f "/var/log/$app/$app.log" ]; then
     touch "/var/log/$app/$app.log"
 fi
 chown $app:$app "/var/log/$app/$app.log"
-chmod 660 "/var/log/$app/$app.log" # rw-rw---- for app user and group
+chmod 660 "/var/log/$app/$app.log"
 
 yunohost service add $app --description="SABnzbd Usenet Client" --log="/var/log/$app/$app.log"
 
@@ -194,6 +182,7 @@ cat > "$data_dir/config.ini" << EOF
 host = 127.0.0.1
 port = $port
 host_whitelist = $domain
+url_base = $path
 complete_dir = $data_dir/complete
 download_dir = $data_dir/incomplete
 admin_dir = $data_dir/admin

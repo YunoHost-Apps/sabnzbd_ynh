@@ -8,35 +8,41 @@ User=__APP__
 Group=__APP__
 WorkingDirectory=__INSTALL_DIR__
 Environment="PATH=__INSTALL_DIR__/venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
-ExecStartPre=/bin/mkdir -p /var/log/__APP__
-ExecStartPre=/bin/chown -R __APP__:__APP__ /var/log/__APP__
-ExecStartPre=/bin/chmod -R 770 /var/log/__APP__
+ExecStartPre=/bin/bash -c 'mkdir -p /var/log/__APP__ && chown -R __APP__:__APP__ /var/log/__APP__ && chmod -R 770 /var/log/__APP__'
 ExecStart=__INSTALL_DIR__/venv/bin/python3 __INSTALL_DIR__/SABnzbd.py --config-file __DATA_DIR__/config.ini --server 127.0.0.1:__PORT__ --browser 0
 StandardOutput=append:/var/log/__APP__/__APP__.log
 StandardError=inherit
 Restart=on-failure
 RestartSec=5
 
-# Sandboxing options for security hardening
+# Sandboxing options to harden security
+# Depending on specificities of your service/app, you may need to tweak these 
+# .. but this should be a good baseline
+NoNewPrivileges=true
 ProtectSystem=strict
-ReadWritePaths=__DATA_DIR__ /var/log/__APP__
-PrivateTmp=yes
-PrivateDevices=yes
+ProtectHome=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectHostname=true
+ProtectClock=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
 RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
-RestrictNamespaces=yes
-RestrictRealtime=yes
+RestrictRealtime=true
 DevicePolicy=closed
-ProtectClock=yes
-ProtectHostname=yes
+ProtectKernelLogs=true
 ProtectProc=invisible
-ProtectControlGroups=yes
-ProtectKernelModules=yes
-ProtectKernelTunables=yes
-LockPersonality=yes
+ProcSubset=pid
+RestrictNamespaces=true
+LockPersonality=true
+MemoryDenyWriteExecute=true
+RestrictSUIDSGID=true
+RemoveIPC=true
 SystemCallArchitectures=native
-SystemCallFilter=@system-service
-SystemCallFilter=~@privileged @resources
 
+# Denying access to capabilities that should not be relevant for webapps
+# Doc: https://man7.org/linux/man-pages/man7/capabilities.7.html
 CapabilityBoundingSet=~CAP_RAWIO CAP_MKNOD
 CapabilityBoundingSet=~CAP_AUDIT_CONTROL CAP_AUDIT_READ CAP_AUDIT_WRITE
 CapabilityBoundingSet=~CAP_SYS_BOOT CAP_SYS_TIME CAP_SYS_MODULE CAP_SYS_PACCT
@@ -46,6 +52,12 @@ CapabilityBoundingSet=~CAP_SYS_TTY_CONFIG
 CapabilityBoundingSet=~CAP_MAC_ADMIN CAP_MAC_OVERRIDE
 CapabilityBoundingSet=~CAP_NET_ADMIN CAP_NET_BROADCAST CAP_NET_RAW
 CapabilityBoundingSet=~CAP_SYS_ADMIN CAP_SYS_PTRACE CAP_SYSLOG
+
+# Denying access to some syscalls that should not be relevant for webapps
+SystemCallFilter=~@clock @debug @module @mount @obsolete @reboot @setuid @swap
+
+# Restrict write paths to the local state directory and logs
+ReadWritePaths=__DATA_DIR__ /var/log/__APP__
 
 [Install]
 WantedBy=multi-user.target
