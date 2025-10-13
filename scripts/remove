@@ -42,17 +42,14 @@ ynh_remove_systemd_config
 
 ynh_remove_nginx_config
 
-ynh_remove_fpm_config
-
 ynh_remove_logrotate
 
-ynh_remove_fail2ban_config
-
-# Remove other various files specific to the app... such as :
-
-ynh_secure_remove --file="/etc/cron.d/$app"
-
-ynh_secure_remove --file="/etc/$app"
+# Restore original par2 if par2cmdline-turbo was installed
+if [ -f "/usr/bin/par2.original" ]; then
+    ynh_script_progression --message="Restoring original par2..." --weight=1
+    mv /usr/bin/par2.original /usr/bin/par2
+    ynh_print_info "Original par2 restored"
+fi
 
 ynh_secure_remove --file="/var/log/$app"
 

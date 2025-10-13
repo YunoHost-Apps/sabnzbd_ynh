@@ -4,6 +4,10 @@
 # COMMON VARIABLES
 #=================================================
 
+# SABnzbd version to install
+# Change this version to install a specific version of SABnzbd
+SABNZBD_VERSION="4.5.3"
+
 #=================================================
 # PERSONAL HELPERS
 #=================================================

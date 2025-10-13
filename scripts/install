@@ -81,6 +81,62 @@ pushd "$install_dir"
 popd
 
 #=================================================
+# INSTALL PAR2CMDLINE-TURBO FOR BETTER PERFORMANCE
+#=================================================
+ynh_script_progression --message="Installing par2cmdline-turbo for improved repair performance..." --weight=2
+
+# Download and install par2cmdline-turbo (faster than standard par2)
+# This greatly improves verification and repair performance in SABnzbd
+tmpdir="$(mktemp -d)"
+architecture=$(dpkg --print-architecture)
+
+# Map Debian architectures to par2cmdline-turbo releases
+case $architecture in
+    "amd64")
+        par2_arch="linux-amd64"
+        ;;
+    "arm64")
+        par2_arch="linux-aarch64"
+        ;;
+    "armhf")
+        par2_arch="linux-armv7"
+        ;;
+    *)
+        ynh_print_warn "par2cmdline-turbo not available for architecture $architecture, keeping standard par2"
+        par2_arch=""
+        ;;
+esac
+
+if [ -n "$par2_arch" ]; then
+    # Get the latest release version
+    par2_version=$(curl -s https://api.github.com/repos/animetosho/par2cmdline-turbo/releases/latest | grep -Po '"tag_name": "v\K[^"]*')
+    
+    if [ -n "$par2_version" ]; then
+        par2_url="https://github.com/animetosho/par2cmdline-turbo/releases/download/v${par2_version}/par2cmdline-turbo-v${par2_version}-${par2_arch}.xz"
+        
+        # Download and install par2cmdline-turbo
+        pushd "$tmpdir"
+            wget -q "$par2_url" -O par2cmdline-turbo.xz
+            xz -d par2cmdline-turbo.xz
+            chmod +x par2cmdline-turbo
+            
+            # Backup original par2 and install turbo version
+            if [ -f /usr/bin/par2 ]; then
+                mv /usr/bin/par2 /usr/bin/par2.original
+            fi
+            mv par2cmdline-turbo /usr/bin/par2
+            
+            ynh_print_info "par2cmdline-turbo v${par2_version} installed successfully"
+        popd
+    else
+        ynh_print_warn "Could not determine latest par2cmdline-turbo version, keeping standard par2"
+    fi
+fi
+
+# Clean up
+ynh_secure_remove --file="$tmpdir"
+
+#=================================================
 # SYSTEM CONFIGURATION
 #=================================================
 ynh_script_progression --message="Adding system configurations related to $app..." --weight=1
