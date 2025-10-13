@@ -102,14 +102,20 @@ ynh_use_logrotate --non-append
 
 if [ "$upgrade_type" == "UPGRADE_APP" ]
 then
-    ynh_script_progression --message="Updating Python virtualenv..." --weight=3
+    ynh_script_progression --message="Recreating Python virtualenv..." --weight=3
     
     pushd "$install_dir"
-        # Upgrade pip and dependencies as the app user
+        # Remove the old virtualenv to avoid conflicts
+        ynh_secure_remove --file="./venv"
+        
+        # Create a fresh virtualenv as the app user
+        sudo -u $app python3 -m venv venv
+        
+        # Upgrade pip and install wheel and setuptools as the app user
         sudo -u $app ./venv/bin/pip install --upgrade pip wheel setuptools
         
-        # Update Python dependencies
-        sudo -u $app ./venv/bin/pip install --upgrade -r requirements.txt
+        # Install all Python dependencies as the app user
+        sudo -u $app ./venv/bin/pip install -r requirements.txt
         
         # Enable multi-language support if needed
         if [ -f "tools/make_mo.py" ]; then
