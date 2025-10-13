@@ -14,6 +14,7 @@ maintainers = ["hazzamyman"]
 [upstream]
 license = "GPL-2.0"
 website = "https://sabnzbd.org"
+logo = "logo.png"
 #demo = "https://demo.example.com"
 admindoc = "https://sabnzbd.org/wiki/"
 userdoc = "https://sabnzbd.org/wiki/"
