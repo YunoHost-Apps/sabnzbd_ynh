@@ -54,6 +54,31 @@ mkdir -p "/var/log/$app"
 chown -R $app:www-data "$install_dir"
 
 #=================================================
+# PYTHON VIRTUALENV SETUP
+#=================================================
+ynh_script_progression --message="Setting up Python virtualenv..." --weight=3
+
+# Create virtualenv and install dependencies
+pushd "$install_dir"
+    # Create and activate virtualenv
+    python3 -m venv venv
+    
+    # Upgrade pip and install wheel
+    ./venv/bin/pip install --upgrade pip wheel setuptools
+    
+    # Install all Python dependencies
+    ./venv/bin/pip install -r requirements.txt
+    
+    # Enable multi-language support if needed
+    if [ -f "tools/make_mo.py" ]; then
+        ./venv/bin/python3 tools/make_mo.py
+    fi
+popd
+
+# Fix permissions for the virtualenv
+chown -R $app:$app "$install_dir/venv"
+
+#=================================================
 # SYSTEM CONFIGURATION
 #=================================================
 ynh_script_progression --message="Adding system configurations related to $app..." --weight=1
@@ -68,79 +93,6 @@ ynh_add_systemd_config
 ynh_use_logrotate --logfile="/var/log/$app/$app.log"
 
 yunohost service add $app --description="SABnzbd Usenet Client" --log="/var/log/$app/$app.log"
-
-#=================================================
-# SPECIFIC SETUP
-#=================================================
-# INSTALL PYTHON DEPENDENCIES
-#=================================================
-ynh_script_progression --message="Installing Python dependencies..." --weight=1
-
-set -x
-set -e
-
-DIR="~/venv-sabnzbd"
-eval DIR=$DIR
-
-SABDIR="~/git/sabnzbd"
-eval SABDIR=$SABDIR
-if [ ! -d "$SABDIR" ]; then
-  echo $DIR "does not exist."
-  exit;
-fi
-
-SABEXE=$SABDIR"/SABnzbd.py"
-if [ ! -f "$SABEXE" ]; then
-    echo "$SABEXE not found!"
-    exit;
-fi
-
-SABREQ=$SABDIR"/requirements.txt"
-if [ ! -f "$SABREQ" ]; then
-    echo "$SABREQ not found!"
-    exit;
-fi
-
-# Check python3-venv is installed:
-python3 -c "import venv" 2>&1
-#echo $?
-if [ $? -eq 1 ]; then
-    echo "Install python3-venv first!";
-    exit;
-fi
-echo "Good: python3-venv is installed"
-
-if [ ! -d "$DIR" ]; then
-  echo $DIR "does not exist. Creating and filling it.";
-  python3 -m venv "$DIR";
-  source "$DIR"/bin/activate; # activate the venv
- # to do: check/install python module wheel
-
-  python3 -m pip install -r "$SABREQ";
-  python3 "$SABEXE";
-else
-  source "$DIR"/bin/activate # activate the venv
-  python3 "$SABEXE";
-  
-fi
-
-#pushd $install_dir
-#	python3 -m venv venv
-#	venv/bin/pip install --upgrade pip
-#	venv/bin/pip install -r requirements.txt
-#	venv/bin/pybabel compile -d locales/
-#	mkdir -p /var/log/$app
-#	chown -R $app:www-data /var/log/$app
-#	chmod o-rwx /var/log/$app
-#	cat <<EOF >> wsgi.py 
-
-#from server import app
-
-
-if __name__ == "__main__":
-    app.run()
-EOF
-popd
 
 #=================================================
 # APP INITIAL CONFIGURATION
@@ -185,21 +137,7 @@ ynh_script_progression --message="Adding multimedia directories..." --weight=6
 ynh_multimedia_build_main_dir
 
 ynh_multimedia_addfolder --source_dir="$data_dir" --dest_dir="share/Usenets"
-#=================================================
-# SETUP APPLICATION WITH CURL
-#=================================================
 
-### Use these lines only if the app installation needs to be finalized through
-### web forms. We generally don't want to ask the final user,
-### so we're going to use curl to automatically fill the fields and submit the
-### forms.
-
-# Installation with curl
-ynh_script_progression --message="Finalizing installation..." --weight=1
-ynh_local_curl "/INSTALL_PATH" "key1=value1" "key2=value2" "key3=value3"
-
-#=================================================
-# GENERIC FINALIZATION
 #=================================================
 # SET PERMISSIONS
 #=================================================
@@ -229,24 +167,17 @@ ynh_systemd_action --service_name=$app --action="start" --log_path="/var/log/$ap
 ynh_script_progression --message="Installation of $app completed" --last
 
 #=================================================
-# PYTHON VIRTUALENV SETUP
+# APP INITIAL CONFIGURATION
 #=================================================
-ynh_script_progression --message="Setting up Python virtualenv..." --weight=3
+ynh_script_progression --message="Adding a configuration file..." --weight=1
 
-# Create virtualenv
-python3 -m venv "$install_dir/venv"
+# Create initial config file
+cat > "$data_dir/config.ini" << EOF
+[misc]
+host = 127.0.0.1
+port = $port
+host_whitelist = $domain
+EOF
 
-# Activate virtualenv and install dependencies
-pushd "$install_dir"
-    # Upgrade pip and install wheel
-    "$install_dir/venv/bin/pip" install --upgrade pip wheel setuptools
-
-    # Install build dependencies for sabctools
-    ynh_package_install python3-dev python3-setuptools libffi-dev libssl-dev
-
-    # Install all Python dependencies
-    "$install_dir/venv/bin/pip" install --no-cache-dir -r requirements.txt
-
-    # Enable multi-language support
-    "$install_dir/venv/bin/python3" tools/make_mo.py
-popd
+# Fix permissions
+chmod 600 "$data_dir/config.ini"

@@ -17,7 +17,9 @@ Restart=on-failure
 # Depending on specificities of your service/app, you may need to tweak these
 # .. but this should be a good baseline
 # Details for these options: https://www.freedesktop.org/software/systemd/man/systemd.exec.html
-NoNewPrivileges=yes
+ProtectSystem=full
+ReadWritePaths=__DATA_DIR__
+ReadWritePaths=/var/log/__APP__
 PrivateTmp=yes
 PrivateDevices=yes
 RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
@@ -27,7 +29,6 @@ DevicePolicy=closed
 ProtectClock=yes
 ProtectHostname=yes
 ProtectProc=invisible
-ProtectSystem=strict
 ProtectControlGroups=yes
 ProtectKernelModules=yes
 ProtectKernelTunables=yes
