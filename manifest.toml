@@ -92,6 +92,7 @@ ram.runtime = "200M"
     [resources.data_dir]
     # This will create/remove the data dir as /home/yunohost.app/$app
     # and store the corresponding setting $data_dir
+    subdirs = [ "complete", "incomplete", "admin" ]
 
     [resources.permissions]
     # This will configure SSOwat permission for $domain/$path/

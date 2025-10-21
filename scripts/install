@@ -1,6 +1,5 @@
 #!/bin/bash
 
-source _common.sh
 source /usr/share/yunohost/helpers
 
 #=================================================
@@ -138,15 +137,6 @@ admin_dir = $data_dir/admin
 log_dir = /var/log/$app
 permissions = 0770
 EOF
-
-# Create necessary directories
-mkdir -p "$data_dir/complete"
-mkdir -p "$data_dir/incomplete"
-mkdir -p "$data_dir/admin"
-
-# Fix permissions again
-chown -R $app:$app "$data_dir"
-chmod -R 770 "$data_dir"
 
 #=================================================
 # YUNOHOST MULTIMEDIA INTEGRATION
