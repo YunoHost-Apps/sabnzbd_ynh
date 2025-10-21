@@ -1,56 +1,45 @@
 #!/bin/bash
 
-#=================================================
-# GENERIC STARTING
-#=================================================
-# IMPORT GENERIC HELPERS
-#=================================================
-
-source _common.sh
 source /usr/share/yunohost/helpers
 
 #=================================================
-# STANDARD MODIFICATIONS
-#=================================================
 # STOP SYSTEMD SERVICE
 #=================================================
-ynh_script_progression --message="Stopping a systemd service..." --weight=1
+ynh_script_progression "Stopping $app's systemd service..."
 
-ynh_systemd_action --service_name=$app --action="stop" --log_path="/var/log/$app/$app.log"
+ynh_systemctl --service=$app --action="stop"
 
 #=================================================
 # MODIFY URL IN NGINX CONF
 #=================================================
-ynh_script_progression --message="Updating NGINX web server configuration..." --weight=1
+ynh_script_progression "Updating NGINX web server configuration..."
 
-ynh_change_url_nginx_config
+ynh_config_change_url_nginx
 
 #=================================================
 # SPECIFIC MODIFICATIONS
 #=================================================
 # UPDATE SABNZBD CONFIGURATION
 #=================================================
-ynh_script_progression --message="Updating SABnzbd configuration..." --weight=1
+ynh_script_progression "Updating SABnzbd configuration..."
 
 # Update url_base in SABnzbd config
 if [ -f "$data_dir/config.ini" ]; then
-    ynh_replace_string "^url_base = .*" "url_base = $new_path" "$data_dir/config.ini"
-    ynh_replace_string "^host_whitelist = .*" "host_whitelist = $new_domain" "$data_dir/config.ini"
+ynh_replace --match="^url_base = .*" --replace="url_base = $new_path" --file="$data_dir/config.ini"
+ynh_replace --match="^host_whitelist = .*" --replace="host_whitelist = $new_domain" --file="$data_dir/config.ini"
 fi
 
 #=================================================
 
 #=================================================
-# GENERIC FINALISATION
-#=================================================
 # START SYSTEMD SERVICE
 #=================================================
-ynh_script_progression --message="Starting a systemd service..." --weight=1
+ynh_script_progression "Starting $app's systemd service..."
 
-ynh_systemd_action --service_name=$app --action="start" --log_path="/var/log/$app/$app.log"
+ynh_systemctl --service=$app --action="start"
 
 #=================================================
 # END OF SCRIPT
 #=================================================
 
-ynh_script_progression --message="Change of URL completed for $app" --last
+ynh_script_progression "Change of URL completed for $app"

@@ -8,12 +8,15 @@ test_format = 1.0
     # Tests to run
     # ------------
 
-    # Exclude private and multi-instance tests for now
-    exclude = ["install.private", "install.multi"]
+    # -------------------------------------------------------------------------------
+    # EVERYTHING PAST THIS POINT IS OPTIONAL AND MOST LIKELY UNNECESSARY FOR NEW APPS
+    #--------------------------------------------------------------------------------
 
     # -------------------------------
     # Default args to use for install
     # -------------------------------
 
-    # Set default language for tests
-    args.language = "en"
+    # -------------------------------
+    # Commits to test upgrade from
+    # -------------------------------
+    test_upgrade_from.c2478c2ffe0d893ce70f8f59f59801f88edc2db4.name = "helpers v1"

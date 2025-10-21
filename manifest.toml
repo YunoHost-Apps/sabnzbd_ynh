@@ -21,7 +21,8 @@ cpe = "cpe:2.3:a:sabnzbd:sabnzbd"
 fund = "https://sabnzbd.org/donate/"
 
 [integration]
-yunohost = ">= 11.1.21"
+yunohost = ">= 11.2.18"
+helpers_version = "2.1"
 architectures = ["amd64", "armhf", "arm64"]
 multi_instance = true
 
@@ -110,7 +111,3 @@ ram.runtime = "200M"
     extras.non_free.repo = "deb http://deb.debian.org/debian bookworm non-free"
     extras.non_free.key = ""
     extras.non_free.packages = ["unrar"]
-
-    #[resources.database]
-    # This will automatically provision/deprovison a MySQL DB and store the corresponding credentials in settings $db_user, $db_name, $db_pwd
-    #type = "mysql"
