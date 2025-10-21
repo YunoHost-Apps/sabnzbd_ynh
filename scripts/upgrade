@@ -49,11 +49,11 @@ pushd "$install_dir"
     ynh_exec_as_app ./venv/bin/pip install --upgrade pip wheel setuptools
 
     # Install all Python dependencies as the app user
-    ynh_exec_as_app ./venv/bin/pip install -r requirements.txt
+    ynh_hide_warnings ynh_exec_as_app ./venv/bin/pip install -r requirements.txt
 
     # Enable multi-language support if needed
     if [ -f "tools/make_mo.py" ]; then
-        ynh_exec_as_app ./venv/bin/python3 tools/make_mo.py
+        ynh_hide_warnings ynh_exec_as_app ./venv/bin/python3 tools/make_mo.py
     fi
 popd
 
@@ -62,6 +62,10 @@ popd
 #=================================================
 # Ensure log directory and file exist with correct permissions
 mkdir -p "/var/log/$app"
+
+chown -R $app:$app "/var/log/$app"
+chmod -R 660 "/var/log/$app"
+chmod 770 "/var/log/$app"
 
 # Create log file if it doesn't exist
 if [ ! -f "/var/log/$app/$app.log" ]; then
