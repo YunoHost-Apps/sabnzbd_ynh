@@ -20,7 +20,7 @@ ynh_script_progression "Upgrading source files..."
 # Download, check integrity, uncompress and patch the source from manifest.toml
 ynh_setup_source --dest_dir="$install_dir" --full_replace --keep="config.ini"
 
-if ynh_app_upgrading_from_version_before 4.5.3~ynh2
+if ynh_app_upgrading_from_version_before 4.5.3~ynh1
 then
  mv "$data_dir/config.ini" "$install_dir/config.ini"
 fi
