@@ -36,13 +36,6 @@ yunohost service add $app --description="SABnzbd Usenet Client" --log="/var/log/
 ynh_config_add_logrotate
 
 #=================================================
-# ADD A CONFIGURATION
-#=================================================
-ynh_script_progression "Updating $app's configuration..."
-
-ynh_config_add --template="config.ini" --destination="$install_dir/config.ini"
-
-#=================================================
 # PYTHON VIRTUALENV SETUP FOR UPGRADES
 #=================================================
 
