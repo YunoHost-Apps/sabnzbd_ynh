@@ -25,8 +25,8 @@ ynh_script_progression "Updating SABnzbd configuration..."
 
 # Update url_base in SABnzbd config
 if [ -f "$install_dir/config.ini" ]; then
-    ynh_replace_string "^url_base = .*" "url_base = $new_path" "$install_dir/config.ini"
-    ynh_replace_string "^host_whitelist = .*" "host_whitelist = $new_domain" "$install_dir/config.ini"
+    ynh_string_replace "^url_base = .*" "url_base = $new_path" "$install_dir/config.ini"
+    ynh_string_replace "^host_whitelist = .*" "host_whitelist = $new_domain" "$install_dir/config.ini"
 fi
 
 #=================================================
