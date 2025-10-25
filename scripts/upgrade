@@ -1,66 +1,13 @@
 #!/bin/bash
 
-#=================================================
-# GENERIC START
-#=================================================
-# IMPORT GENERIC HELPERS
-#=================================================
-
-source _common.sh
 source /usr/share/yunohost/helpers
-
-# Settings are automatically loaded as bash variables
-# in every app script context, therefore typically these will exist:
-# - $domain
-# - $path
-# - $language
-# - $install_dir
-# - $port
-# ...
-
-# In the context of upgrade,
-# - resources are automatically provisioned / updated / deleted (depending on existing resources)
-# - a safety backup is automatically created by the core and will be restored if the upgrade fails
-
-### This helper will compare the version of the currently installed app and the version of the upstream package.
-### $upgrade_type can have 2 different values
-### - UPGRADE_APP if the upstream app version has changed
-### - UPGRADE_PACKAGE if only the YunoHost package has changed
-### ynh_check_app_version_changed will stop the upgrade if the app is up to date.
-### UPGRADE_APP should be used to upgrade the core app only if there's an upgrade to do.
-upgrade_type=$(ynh_check_app_version_changed)
-
-#=================================================
-# STANDARD UPGRADE STEPS
-#=================================================
-# ENSURE DOWNWARD COMPATIBILITY
-#=================================================
-#ynh_script_progression --message="Ensuring downward compatibility..." --weight=1
-
-#
-# N.B. : the following setting migration snippets are provided as *EXAMPLES*
-# of what you may want to do in some cases (e.g. a setting was not defined on
-# some legacy installs and you therefore want to initiaze stuff during upgrade)
-#
-
-# If db_name doesn't exist, create it
-#if [ -z "$db_name" ]; then
-#	db_name=$(ynh_sanitize_dbid --db_name=$app)
-#	ynh_app_setting_set --app=$app --key=db_name --value=$db_name
-#fi
-
-# If install_dir doesn't exist, create it
-#if [ -z "$install_dir" ]; then
-#	install_dir=/var/www/$app
-#	ynh_app_setting_set --app=$app --key=install_dir --value=$install_dir
-#fi
 
 #=================================================
 # STOP SYSTEMD SERVICE
 #=================================================
-ynh_script_progression --message="Stopping a systemd service..." --weight=1
+ynh_script_progression "Stopping $app's systemd service..."
 
-ynh_systemd_action --service_name=$app --action="stop" --log_path="/var/log/$app/$app.log"
+ynh_systemctl --service=$app --action="stop"
 
 #=================================================
 # "REBUILD" THE APP (DEPLOY NEW SOURCES, RERUN NPM BUILD...)
@@ -68,88 +15,76 @@ ynh_systemd_action --service_name=$app --action="stop" --log_path="/var/log/$app
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
 
-if [ "$upgrade_type" == "UPGRADE_APP" ]
+ynh_script_progression "Upgrading source files..."
+
+# Download, check integrity, uncompress and patch the source from manifest.toml
+ynh_setup_source --dest_dir="$install_dir" --full_replace --keep="config.ini"
+
+if ynh_app_upgrading_from_version_before 4.5.3~ynh1
 then
-	ynh_script_progression --message="Upgrading source files..." --weight=1
-
-	# Download, check integrity, uncompress and patch the source from manifest.toml
-	ynh_setup_source --dest_dir="$install_dir"
+ mv "$data_dir/config.ini" "$install_dir/config.ini"
 fi
-
-# $install_dir will automatically be initialized with some decent 
-# permissions by default ... however, you may need to recursively reapply
-# ownership to all files such as after the ynh_setup_source step
-chown -R $app:www-data "$install_dir"
 
 #=================================================
 # REAPPLY SYSTEM CONFIGURATIONS
 #=================================================
-ynh_script_progression --message="Upgrading system configurations related to $app..." --weight=1
+ynh_script_progression "Upgrading system configurations related to $app..."
 
 # This should be a literal copypaste of what happened in the install's "System configuration" section
 
-ynh_add_nginx_config
+ynh_config_add_nginx
 
-ynh_add_systemd_config
+ynh_config_add_systemd
 
 yunohost service add $app --description="SABnzbd Usenet Client" --log="/var/log/$app/$app.log"
 
-ynh_use_logrotate --non-append
+ynh_config_add_logrotate
 
 #=================================================
 # PYTHON VIRTUALENV SETUP FOR UPGRADES
 #=================================================
 
-if [ "$upgrade_type" == "UPGRADE_APP" ]
-then
-    ynh_script_progression --message="Recreating Python virtualenv..." --weight=3
-    
-    pushd "$install_dir"
-        # Remove the old virtualenv to avoid conflicts
-        ynh_secure_remove --file="./venv"
-        
-        # Create a fresh virtualenv as the app user
-        sudo -u $app python3 -m venv venv
-        
-        # Upgrade pip and install wheel and setuptools as the app user
-        sudo -u $app ./venv/bin/pip install --upgrade pip wheel setuptools
-        
-        # Install all Python dependencies as the app user
-        sudo -u $app ./venv/bin/pip install -r requirements.txt
-        
-        # Enable multi-language support if needed
-        if [ -f "tools/make_mo.py" ]; then
-            sudo -u $app ./venv/bin/python3 tools/make_mo.py
-        fi
-    popd
-fi
+ynh_script_progression "Recreating Python virtualenv..."
 
-# unrar is now managed automatically via manifest.toml resources.apt.extras.non_free
+pushd "$install_dir"
+    # Create virtualenv as the app user
+    ynh_exec_as_app python3 -m venv venv
+
+    # Upgrade pip and install wheel as the app user
+    ynh_exec_as_app ./venv/bin/pip install --upgrade pip wheel setuptools
+
+    # Install all Python dependencies as the app user
+    ynh_hide_warnings ynh_exec_as_app ./venv/bin/pip install -r requirements.txt
+
+    # Enable multi-language support if needed
+    if [ -f "tools/make_mo.py" ]; then
+        ynh_hide_warnings ynh_exec_as_app ./venv/bin/python3 tools/make_mo.py
+    fi
+popd
 
 #=================================================
 # ENSURE LOG DIRECTORY EXISTS
 #=================================================
 # Ensure log directory and file exist with correct permissions
 mkdir -p "/var/log/$app"
-chown -R $app:$app "/var/log/$app"
-chmod -R 770 "/var/log/$app"
 
 # Create log file if it doesn't exist
 if [ ! -f "/var/log/$app/$app.log" ]; then
     touch "/var/log/$app/$app.log"
 fi
-chown $app:$app "/var/log/$app/$app.log"
-chmod 660 "/var/log/$app/$app.log"
+
+chown -R $app:$app "/var/log/$app"
+chmod -R 770 "/var/log/$app"
 
 #=================================================
 # START SYSTEMD SERVICE
 #=================================================
-ynh_script_progression --message="Starting a systemd service..." --weight=1
+ynh_script_progression "Starting $app's systemd service..."
 
-ynh_systemd_action --service_name=$app --action="start" --log_path="/var/log/$app/$app.log"
+ynh_systemctl --service=$app --action="start"
 
 #=================================================
 # END OF SCRIPT
 #=================================================
 
-ynh_script_progression --message="Upgrade of $app completed" --last
+ynh_script_progression "Upgrade of $app completed"
