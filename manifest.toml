@@ -21,7 +21,7 @@ cpe = "cpe:2.3:a:sabnzbd:sabnzbd"
 fund = "https://sabnzbd.org/donate/"
 
 [integration]
-yunohost = ">= 12.1.30"
+yunohost = ">= 12.1.28"
 helpers_version = "2.1"
 architectures = ["amd64", "armhf", "arm64"]
 multi_instance = true
