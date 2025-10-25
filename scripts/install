@@ -118,19 +118,7 @@ yunohost service add $app --description="SABnzbd Usenet Client" --log="/var/log/
 #=================================================
 ynh_script_progression "Adding $app's configuration..."
 
-# Create initial config file
-cat > "$data_dir/config.ini" << EOF
-[misc]
-host = 127.0.0.1
-port = $port
-host_whitelist = $domain
-url_base = $path
-complete_dir = $data_dir/complete
-download_dir = $data_dir/incomplete
-admin_dir = $data_dir/admin
-log_dir = /var/log/$app
-permissions = 0770
-EOF
+ynh_config_add --template="config.ini" --destination="$install_dir/config.ini"
 
 #=================================================
 # YUNOHOST MULTIMEDIA INTEGRATION

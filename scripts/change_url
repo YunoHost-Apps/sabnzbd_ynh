@@ -23,11 +23,8 @@ ynh_config_change_url_nginx
 #=================================================
 ynh_script_progression "Updating SABnzbd configuration..."
 
-# Update url_base in SABnzbd config
-if [ -f "$data_dir/config.ini" ]; then
-ynh_replace --match="^url_base = .*" --replace="url_base = $new_path" --file="$data_dir/config.ini"
-ynh_replace --match="^host_whitelist = .*" --replace="host_whitelist = $new_domain" --file="$data_dir/config.ini"
-fi
+domain=$new_domain
+ynh_config_add --template="config.ini" --destination="$install_dir/config.ini"
 
 #=================================================
 
