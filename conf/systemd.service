@@ -18,8 +18,8 @@ RestartSec=5
 # Depending on specificities of your service/app, you may need to tweak these 
 # .. but this should be a good baseline
 NoNewPrivileges=true
-ProtectSystem=strict
-ProtectHome=true
+# ProtectSystem=strict # Disable this for now as it prevents to write on logs on new install and therefore makes the service to fail
+# ProtectHome=true # home has to be accessible since the data_dir exists
 PrivateTmp=true
 PrivateDevices=true
 ProtectHostname=true
