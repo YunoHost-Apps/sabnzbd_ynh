@@ -21,7 +21,7 @@ ynh_config_change_url_nginx
 #=================================================
 # UPDATE SABNZBD CONFIGURATION
 #=================================================
-ynh_script_progression "Updating SABnzbd configuration..."
+ynh_script_progression --message="Updating SABnzbd configuration..." --weight=1
 
 # Update url_base in SABnzbd config
 if [ -f "$install_dir/config.ini" ]; then

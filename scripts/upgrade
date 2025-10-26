@@ -62,6 +62,8 @@ pushd "$install_dir"
     fi
 popd
 
+# unrar is now managed automatically via manifest.toml resources.apt.extras.non_free
+
 #=================================================
 # ENSURE LOG DIRECTORY EXISTS
 #=================================================
@@ -72,6 +74,8 @@ mkdir -p "/var/log/$app"
 if [ ! -f "/var/log/$app/$app.log" ]; then
     touch "/var/log/$app/$app.log"
 fi
+chown $app:$app "/var/log/$app/$app.log"
+chmod 660 "/var/log/$app/$app.log"
 
 chown -R $app:$app "/var/log/$app"
 chmod -R 770 "/var/log/$app"
