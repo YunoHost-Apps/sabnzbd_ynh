@@ -18,12 +18,26 @@ ynh_systemctl --service=$app --action="stop"
 ynh_script_progression "Upgrading source files..."
 
 # Download, check integrity, uncompress and patch the source from manifest.toml
-ynh_setup_source --dest_dir="$install_dir" --full_replace --keep="config.ini"
+ynh_setup_source --dest_dir="$install_dir" --full_replace --keep="confi .ini"
+ynh_setup_source --dest_dir="$install_dir/par2cmdline-turbo" --source_id="par2" --full_replace=1
 
 if ynh_app_upgrading_from_version_before 4.5.5~ynh1
 then
  mv "$data_dir/config.ini" "$install_dir/config.ini"
 fi
+
+#=================================================
+# BUILD PAR2CMDLINE-TURBO
+#=================================================
+ynh_script_progression "Building par2cmdline-turbo..."
+
+pushd "$install_dir/par2cmdline-turbo"
+    ynh_exec_as_app ./automake.sh
+    ynh_exec_as_app ./configure
+    ynh_exec_as_app make
+    ynh_exec_as_app make check
+    ynh_exec_as_app make install
+popd
 
 #=================================================
 # REAPPLY SYSTEM CONFIGURATIONS

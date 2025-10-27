@@ -60,6 +60,11 @@ ram.runtime = "200M"
         sha256 = "7e9269c8b7a9919ee2f7799d969e7a99148ebadae79638beba486eb6f29e4d15"
         autoupdate.strategy = "latest_github_release"
 
+        [resources.sources.par2]
+        url = "https://github.com/animetosho/par2cmdline-turbo/archive/refs/tags/v1.3.0.tar.gz"
+        sha256 = "ec7106f88f45e834607d74fb373dae22583f08eafef4850ae98c7c70ce788f72"
+        autoupdate.strategy = "latest_github_release"
+
     [resources.system_user]
 
     [resources.install_dir]

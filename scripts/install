@@ -11,6 +11,20 @@ ynh_script_progression "Setting up source files..."
 
 # Download, check integrity, uncompress and patch the source from manifest.toml
 ynh_setup_source --dest_dir="$install_dir"
+ynh_setup_source --dest_dir="$install_dir/par2cmdline-turbo" --source_id="par2"
+
+#=================================================
+# BUILD PAR2CMDLINE-TURBO
+#=================================================
+ynh_script_progression "Building par2cmdline-turbo..."
+
+pushd "$install_dir/par2cmdline-turbo"
+    ynh_exec_as_app ./automake.sh
+    ynh_exec_as_app ./configure
+    ynh_exec_as_app make
+    ynh_exec_as_app make check
+    ynh_exec_as_app make install
+popd
 
 #=================================================
 # PYTHON VIRTUALENV SETUP
