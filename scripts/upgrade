@@ -30,6 +30,7 @@ fi
 #=================================================
 # BUILD PAR2CMDLINE-TURBO
 #=================================================
+ynh_script_progression "Building par2cmdline-turbo..."
 check_and_build_par2
 
 #=================================================
