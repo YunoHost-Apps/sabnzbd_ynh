@@ -32,12 +32,12 @@ fi
 ynh_script_progression "Building par2cmdline-turbo..."
 
 pushd "/tmp/par2cmdline-turbo"
-    ynh_exec_as_app ./automake.sh
-    ynh_exec_as_app ./configure
-    ynh_exec_as_app make
-    ynh_exec_as_app make install
-    ynh_exec_as_app make clean
-    ynh_exec_as_app make distclean
+    ./automake.sh
+    ./configure
+    make
+    make install
+    make clean
+    make distclean
 popd
 
 #=================================================
