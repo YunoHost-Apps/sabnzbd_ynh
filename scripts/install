@@ -19,12 +19,12 @@ ynh_setup_source --dest_dir="/tmp/par2cmdline-turbo" --source_id="par2"
 ynh_script_progression "Building par2cmdline-turbo..."
 
 pushd "/tmp/par2cmdline-turbo"
-    ./automake.sh
-    ./configure
-    make
-    make install
-    make clean
-    make distclean
+    ynh_hide_warnings ./automake.sh
+    ynh_hide_warnings ./configure
+    ynh_hide_warnings make
+    ynh_hide_warnings make install
+    ynh_hide_warnings make clean
+    ynh_hide_warnings make distclean
 popd
 
 #=================================================
