@@ -13,6 +13,6 @@ check_and_build_par2() {
             ynh_hide_warnings make clean
             ynh_hide_warnings make distclean
         popd
-        ynh_secure_remove "$par2_download_path"
+        ynh_safe_rm "$par2_download_path"
     fi
 }
