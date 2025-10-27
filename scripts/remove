@@ -9,14 +9,11 @@ source /usr/share/yunohost/helpers
 # REMOVE SYSTEMD SERVICE
 
 ynh_script_progression "Removing par2cmdline-turbo..."
-if [ -f "$par2_install_path" ]; then
+if [ -f "$par2_install_path/par2" ]; then
     ynh_script_progression "par2cmdline-turbo found, removing..."
-    rm -f "$par2_install_path"
+    ynh_safe_rm "$par2_install_path/par2"
 	ynh_script_progression "par2cmdline-turbo removed"
-else
-    ynh_script_progression "par2cmdline-turbo not found, skipping..."
 fi
-
 
 #=================================================
 ynh_script_progression "Removing system configurations related to $app..."
