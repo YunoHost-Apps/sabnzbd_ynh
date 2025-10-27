@@ -1,22 +1,18 @@
 #!/bin/bash
 
-#=================================================
-# COMMON VARIABLES
-#=================================================
+par2_download_path="/tmp/par2cmdline-turbo"
+par2_install_path="/usr/local/bin/par2" # default path by make install
 
-# SABnzbd version to install
-# Change this version to install a specific version of SABnzbd
-SABNZBD_VERSION="4.5.3"
-SABNZBD_SHA256="c745eeb9f66939f9257ad06042b63fac575aea44604bcdf90bbc8a33cd13e4a0"
-
-#=================================================
-# PERSONAL HELPERS
-#=================================================
-
-#=================================================
-# EXPERIMENTAL HELPERS
-#=================================================
-
-#=================================================
-# FUTURE OFFICIAL HELPERS
-#=================================================
+check_and_build_par2() {
+    if [ ! -f "$par2_install_path" ]; then
+        pushd "$par2_download_path"
+            ynh_hide_warnings ./automake.sh
+            ynh_hide_warnings ./configure
+            ynh_hide_warnings make
+            ynh_hide_warnings make install
+            ynh_hide_warnings make clean
+            ynh_hide_warnings make distclean
+        popd
+        ynh_safe_rm "$par2_download_path"
+    fi
+}

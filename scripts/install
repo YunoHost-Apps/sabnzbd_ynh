@@ -1,171 +1,62 @@
 #!/bin/bash
 
-#=================================================
-# GENERIC START
-#=================================================
-# IMPORT GENERIC HELPERS
-#=================================================
-
 source _common.sh
 source /usr/share/yunohost/helpers
-
-# Install parameters are automatically saved as settings
-#
-# Settings are automatically loaded as bash variables
-# in every app script context, therefore typically these will exist:
-# - $domain
-# - $path
-# - $language
-# ... etc
-#
-# Resources defined in the manifest are provisioned prior to this script
-# and corresponding settings are also available, such as:
-# - $install_dir
-# - $port
-# - $db_name
-# ...
-
-#
-# $app is the app id (i.e. 'example' for first install, 
-# or 'example__2', '__3', ... for multi-instance installs)
-#
 
 #=================================================
 # APP "BUILD" (DEPLOYING SOURCES, VENV, COMPILING ETC)
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
-ynh_script_progression --message="Setting up source files..." --weight=1
-
-### `ynh_setup_source` is used to install an app from a zip or tar.gz file,
-### downloaded from an upstream source, like a git repository.
-### `ynh_setup_source` use the file manifest.toml
+ynh_script_progression "Setting up source files..."
 
 # Download, check integrity, uncompress and patch the source from manifest.toml
 ynh_setup_source --dest_dir="$install_dir"
+ynh_setup_source --dest_dir="/tmp/par2cmdline-turbo" --source_id="par2"
 
-# Create required directories
-mkdir -p "$data_dir"
-mkdir -p "/var/log/$app"
-
-# Fix permissions early
-chown -R $app:$app "$install_dir"
-chown -R $app:$app "$data_dir"
-chown -R $app:$app "/var/log/$app"
-
-chmod 750 "$install_dir"
-chmod -R o-rwx "$install_dir"
-chmod -R 750 "$data_dir"
-chmod -R 770 "/var/log/$app"
+#=================================================
+# BUILD PAR2CMDLINE-TURBO
+#=================================================
+ynh_script_progression "Building par2cmdline-turbo..."
+check_and_build_par2
 
 #=================================================
 # PYTHON VIRTUALENV SETUP
 #=================================================
-ynh_script_progression --message="Setting up Python virtualenv..." --weight=3
+ynh_script_progression "Setting up Python virtualenv..."
 
 # Create virtualenv and install dependencies
 pushd "$install_dir"
     # Create virtualenv as the app user
-    sudo -u $app python3 -m venv venv
-    
+    ynh_exec_as_app python3 -m venv venv
+
     # Upgrade pip and install wheel as the app user
-    sudo -u $app ./venv/bin/pip install --upgrade pip wheel setuptools
-    
+    ynh_exec_as_app ./venv/bin/pip install --upgrade pip wheel setuptools
+
     # Install all Python dependencies as the app user
-    sudo -u $app ./venv/bin/pip install -r requirements.txt
-    
+    ynh_hide_warnings ynh_exec_as_app ./venv/bin/pip install -r requirements.txt
+
     # Enable multi-language support if needed
     if [ -f "tools/make_mo.py" ]; then
-        sudo -u $app ./venv/bin/python3 tools/make_mo.py
+        ynh_hide_warnings ynh_exec_as_app ./venv/bin/python3 tools/make_mo.py
     fi
 popd
 
 #=================================================
-# INSTALL PAR2CMDLINE-TURBO FOR BETTER PERFORMANCE
-#=================================================
-ynh_script_progression --message="Installing par2cmdline-turbo for improved repair performance..." --weight=2
-
-# Download and install par2cmdline-turbo (faster than standard par2)
-# This greatly improves verification and repair performance in SABnzbd
-tmpdir="$(mktemp -d)"
-architecture=$(dpkg --print-architecture)
-
-# Map Debian architectures to par2cmdline-turbo releases
-case $architecture in
-    "amd64")
-        par2_arch="linux-amd64"
-        ;;
-    "arm64")
-        par2_arch="linux-aarch64"
-        ;;
-    "armhf")
-        par2_arch="linux-armv7"
-        ;;
-    *)
-        ynh_print_warn "par2cmdline-turbo not available for architecture $architecture, keeping standard par2"
-        par2_arch=""
-        ;;
-esac
-
-if [ -n "$par2_arch" ]; then
-    # Get the latest release version
-    par2_version=$(curl -s https://api.github.com/repos/animetosho/par2cmdline-turbo/releases/latest | grep -Po '"tag_name": "v\K[^"]*')
-    
-    if [ -n "$par2_version" ]; then
-        par2_url="https://github.com/animetosho/par2cmdline-turbo/releases/download/v${par2_version}/par2cmdline-turbo-v${par2_version}-${par2_arch}.xz"
-        
-        # Download and install par2cmdline-turbo
-        pushd "$tmpdir"
-            if wget -q "$par2_url" -O par2cmdline-turbo.xz; then
-                xz -d par2cmdline-turbo.xz
-                chmod +x par2cmdline-turbo
-                
-                # Backup original par2 and install turbo version
-                if [ -f /usr/bin/par2 ]; then
-                    mv /usr/bin/par2 /usr/bin/par2.original
-                fi
-                mv par2cmdline-turbo /usr/bin/par2
-                
-                ynh_print_info "par2cmdline-turbo v${par2_version} installed successfully"
-            else
-                ynh_print_warn "Failed to download par2cmdline-turbo, keeping standard par2"
-            fi
-        popd
-    else
-        ynh_print_warn "Could not determine latest par2cmdline-turbo version, keeping standard par2"
-    fi
-fi
-
-# Clean up
-ynh_secure_remove --file="$tmpdir"
-
-# unrar is now installed automatically via manifest.toml resources.apt.extras.non_free
-
-#=================================================
 # SYSTEM CONFIGURATION
 #=================================================
-ynh_script_progression --message="Adding system configurations related to $app..." --weight=1
+ynh_script_progression "Adding system configurations related to $app..."
 
 # Create a dedicated NGINX config
-ynh_add_nginx_config
+ynh_config_add_nginx
 
 # Create a dedicated systemd config
-ynh_add_systemd_config
+ynh_config_add_systemd
 
 # Use logrotate to manage application logfile(s)
-ynh_use_logrotate --logfile="/var/log/$app/$app.log"
-
-# Ensure log directory and file exist with correct permissions
-mkdir -p "/var/log/$app"
-chown -R $app:$app "/var/log/$app"
-chmod -R 770 "/var/log/$app"
-
-# Create log file if it doesn't exist
-if [ ! -f "/var/log/$app/$app.log" ]; then
-    touch "/var/log/$app/$app.log"
-fi
-chown $app:$app "/var/log/$app/$app.log"
-chmod 660 "/var/log/$app/$app.log"
+ynh_config_add_logrotate
+touch /var/log/$app/$app.log
+chown -R $app:$app /var/log/$app/
 
 yunohost service add $app --description="SABnzbd Usenet Client" --log="/var/log/$app/$app.log"
 
@@ -174,35 +65,14 @@ yunohost service add $app --description="SABnzbd Usenet Client" --log="/var/log/
 #=================================================
 # ADD A CONFIGURATION
 #=================================================
-ynh_script_progression --message="Adding a configuration file..." --weight=1
+ynh_script_progression "Adding $app's configuration..."
 
-# Create initial config file
-cat > "$data_dir/config.ini" << EOF
-[misc]
-host = 127.0.0.1
-port = $port
-host_whitelist = $domain
-url_base = $path
-complete_dir = $data_dir/complete
-download_dir = $data_dir/incomplete
-admin_dir = $data_dir/admin
-log_dir = /var/log/$app
-permissions = 0770
-EOF
-
-# Create necessary directories
-mkdir -p "$data_dir/complete"
-mkdir -p "$data_dir/incomplete"
-mkdir -p "$data_dir/admin"
-
-# Fix permissions again
-chown -R $app:$app "$data_dir"
-chmod -R 770 "$data_dir"
+ynh_config_add --template="config.ini" --destination="$install_dir/config.ini"
 
 #=================================================
 # YUNOHOST MULTIMEDIA INTEGRATION
 #=================================================
-ynh_script_progression --message="Adding multimedia directories..." --weight=6
+ynh_script_progression "Adding multimedia directories..."
 
 # Build YunoHost multimedia directories
 ynh_multimedia_build_main_dir
@@ -212,12 +82,12 @@ ynh_multimedia_addfolder --source_dir="$data_dir" --dest_dir="share/Usenets"
 #=================================================
 # START SYSTEMD SERVICE
 #=================================================
-ynh_script_progression --message="Starting SABnzbd service..." --weight=1
+ynh_script_progression "Starting SABnzbd service..."
 
 # Start a systemd service
-ynh_systemd_action --service_name=$app --action="start" --log_path="/var/log/$app/$app.log"
+ynh_systemctl --service=$app --action="start"
 
 #=================================================
 # END OF SCRIPT
 #=================================================
-ynh_script_progression --message="Installation of $app completed" --last
+ynh_script_progression "Installation of $app completed"

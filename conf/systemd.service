@@ -8,8 +8,7 @@ User=__APP__
 Group=__APP__
 WorkingDirectory=__INSTALL_DIR__
 Environment="PATH=__INSTALL_DIR__/venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
-ExecStartPre=/bin/bash -c 'mkdir -p /var/log/__APP__ && chown -R __APP__:__APP__ /var/log/__APP__ && chmod -R 770 /var/log/__APP__'
-ExecStart=__INSTALL_DIR__/venv/bin/python3 __INSTALL_DIR__/SABnzbd.py --config-file __DATA_DIR__/config.ini --server 127.0.0.1:__PORT__ --browser 0
+ExecStart=__INSTALL_DIR__/venv/bin/python3 __INSTALL_DIR__/SABnzbd.py --config-file __INSTALL_DIR__/config.ini --server 127.0.0.1:__PORT__ --browser 0
 StandardOutput=append:/var/log/__APP__/__APP__.log
 StandardError=inherit
 Restart=on-failure
@@ -19,8 +18,8 @@ RestartSec=5
 # Depending on specificities of your service/app, you may need to tweak these 
 # .. but this should be a good baseline
 NoNewPrivileges=true
-ProtectSystem=strict
-ProtectHome=true
+# ProtectSystem=strict # Disable this for now as it prevents to write on logs on new install and therefore makes the service to fail
+# ProtectHome=true # home has to be accessible since the data_dir exists
 PrivateTmp=true
 PrivateDevices=true
 ProtectHostname=true
