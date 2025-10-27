@@ -1,7 +1,7 @@
 #!/bin/bash
 
 par2_download_path="/tmp/par2cmdline-turbo"
-par2_install_path="/usr/local/bin/par2" # default path by make install
+par2_install_path="/usr/local/bin" # default path by make install
 
 check_and_build_par2() {
     if [ ! -f "$par2_install_path" ]; then

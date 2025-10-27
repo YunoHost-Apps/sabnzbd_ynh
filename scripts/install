@@ -12,13 +12,9 @@ ynh_script_progression "Setting up source files..."
 
 # Download, check integrity, uncompress and patch the source from manifest.toml
 ynh_setup_source --dest_dir="$install_dir"
-ynh_setup_source --dest_dir="/tmp/par2cmdline-turbo" --source_id="par2"
 
-#=================================================
-# BUILD PAR2CMDLINE-TURBO
-#=================================================
-ynh_script_progression "Building par2cmdline-turbo..."
-check_and_build_par2
+ynh_script_progression "Installing par2cmdline-turbo..."
+ynh_setup_source --dest_dir="$par2_install_path" --source_id="par2"
 
 #=================================================
 # PYTHON VIRTUALENV SETUP
