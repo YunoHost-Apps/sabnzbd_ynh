@@ -1,5 +1,6 @@
 #!/bin/bash
 
+source scripts/_common
 source /usr/share/yunohost/helpers
 
 #=================================================
@@ -16,16 +17,7 @@ ynh_setup_source --dest_dir="/tmp/par2cmdline-turbo" --source_id="par2"
 #=================================================
 # BUILD PAR2CMDLINE-TURBO
 #=================================================
-ynh_script_progression "Building par2cmdline-turbo..."
-
-pushd "/tmp/par2cmdline-turbo"
-    ynh_hide_warnings ./automake.sh
-    ynh_hide_warnings ./configure
-    ynh_hide_warnings make
-    ynh_hide_warnings make install
-    ynh_hide_warnings make clean
-    ynh_hide_warnings make distclean
-popd
+check_and_build_par2
 
 #=================================================
 # PYTHON VIRTUALENV SETUP
