@@ -2,7 +2,7 @@
 
 SABnzbd is a free and easy binary newsreader for downloading, verifying and extracting files from Usenet.
 
-## Key Features
+### Key Features
 
 - **Automatic Processing**: Downloads, verifies, repairs and extracts files automatically
 - **Web Interface**: Modern, responsive web interface for easy management
@@ -14,16 +14,14 @@ SABnzbd is a free and easy binary newsreader for downloading, verifying and extr
 - **Secure**: HTTPS/SSL support for secure connections
 - **Extensible**: Plugin system for additional functionality
 
-## Supported Formats
+### Supported Formats
 
 - RAR archives (with automatic repair using PAR2)
 - ZIP archives
 - 7-Zip archives
 - TAR/GZ archives
 
-## Integration
-
-This YunoHost package includes:
+### Integration in YunoHost
 
 - Automatic service management
 - Log rotation
