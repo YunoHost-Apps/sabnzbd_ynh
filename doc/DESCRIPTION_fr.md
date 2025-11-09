@@ -1,8 +1,6 @@
-# Fonctionnalités de SABnzbd
-
 SABnzbd est un lecteur de news binaire gratuit et simple pour télécharger, vérifier et extraire des fichiers depuis Usenet.
 
-## Fonctionnalités principales
+### Fonctionnalités principales
 
 - **Traitement automatique** : Télécharge, vérifie, répare et extrait les fichiers automatiquement
 - **Interface web** : Interface web moderne et responsive pour une gestion facile
@@ -14,16 +12,14 @@ SABnzbd est un lecteur de news binaire gratuit et simple pour télécharger, vé
 - **Sécurisé** : Support HTTPS/SSL pour des connexions sécurisées
 - **Extensible** : Système de plugins pour des fonctionnalités supplémentaires
 
-## Formats supportés
+### Formats supportés
 
 - Archives RAR (avec réparation automatique via PAR2)
 - Archives ZIP
 - Archives 7-Zip
 - Archives TAR/GZ
 
-## Intégration
-
-Ce paquet YunoHost inclut :
+### Intégration avec YunoHost
 
 - Gestion automatique du service
 - Rotation des journaux
