@@ -1,5 +1,3 @@
-# SABnzbd Features
-
 SABnzbd is a free and easy binary newsreader for downloading, verifying and extracting files from Usenet.
 
 ### Key Features
