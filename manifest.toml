@@ -4,8 +4,8 @@ packaging_format = 2
 
 id = "sabnzbd"
 name = "SABnzbd"
-description.en = "The Free and easy binary newsreader for downloading, verifying and extracting files from Usenet"
-description.fr = "Le lecteur de news binaire gratuit et simple pour télécharger, vérifier et extraire des fichiers depuis Usenet"
+description.en = "Newsreader for downloading, verifying and extracting files from Usenet"
+description.fr = "Lecteur de news pour télécharger, vérifier et extraire des fichiers depuis Usenet"
 
 version = "4.5.5~ynh2"
 

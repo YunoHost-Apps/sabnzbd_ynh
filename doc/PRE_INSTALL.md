@@ -1,5 +1,3 @@
-## Before Installing SABnzbd
-
 SABnzbd is a Usenet client that requires a Usenet provider account to function properly.
 
 **Important Notes:**

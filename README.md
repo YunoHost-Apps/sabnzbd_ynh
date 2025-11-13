@@ -8,7 +8,7 @@ It shall NOT be edited by hand.
   SABnzbd, packaged for YunoHost
 </h1>
 
-The Free and easy binary newsreader for downloading, verifying and extracting files from Usenet
+Newsreader for downloading, verifying and extracting files from Usenet
 
 [![🌐 Official app website](https://img.shields.io/badge/Official_app_website-darkgreen?style=for-the-badge)](https://sabnzbd.org)
 [![Version: 4.5.5~ynh2](https://img.shields.io/badge/Version-4.5.5~ynh2-rgb(18,138,11)?style=for-the-badge)](https://ci-apps.yunohost.org/ci/apps/sabnzbd/)
