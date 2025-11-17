@@ -11,11 +11,29 @@ ynh_print_info "Declaring files to be backed up..."
 ynh_backup "$install_dir"
 
 #=================================================
-# BACKUP THE DATA DIR
+# BACKUP THE DATA DIR (SELECTIVE)
 #=================================================
 
-# Only relevant if there is a "data_dir" resource for this app
-ynh_backup "$data_dir"
+# Récupérer les paramètres de configuration
+backup_complete="${backup_complete_downloads:-false}"
+backup_incomplete="${backup_incomplete_downloads:-false}"
+backup_admin="${backup_admin_data:-false}"
+
+# Sauvegarder sélectivement les sous-dossiers du data_dir
+if [ "$backup_complete" = "true" ]; then
+    ynh_print_info "Backing up complete downloads folder..."
+    ynh_backup "$data_dir/complete"
+fi
+
+if [ "$backup_incomplete" = "true" ]; then
+    ynh_print_info "Backing up incomplete downloads folder..."
+    ynh_backup "$data_dir/incomplete"
+fi
+
+if [ "$backup_admin" = "true" ]; then
+    ynh_print_info "Backing up admin data folder..."
+    ynh_backup "$data_dir/admin"
+fi
 
 #=================================================
 # BACKUP THE NGINX CONFIGURATION

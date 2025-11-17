@@ -45,6 +45,21 @@ yunohost service add $app --description="SABnzbd Usenet Client" --log="/var/log/
 ynh_config_add_logrotate
 
 #=================================================
+# INITIALIZE BACKUP SETTINGS IF THEY DON'T EXIST
+#=================================================
+
+# Initialiser les paramètres de backup s'ils n'existent pas déjà (pour les installations existantes)
+if [ -z "${backup_complete_downloads:-}" ]; then
+    ynh_app_setting_set --key=backup_complete_downloads --value="false"
+fi
+if [ -z "${backup_incomplete_downloads:-}" ]; then
+    ynh_app_setting_set --key=backup_incomplete_downloads --value="false"
+fi
+if [ -z "${backup_admin_data:-}" ]; then
+    ynh_app_setting_set --key=backup_admin_data --value="false"
+fi
+
+#=================================================
 # PYTHON VIRTUALENV SETUP FOR UPGRADES
 #=================================================
 
