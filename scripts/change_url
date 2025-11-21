@@ -17,8 +17,6 @@ ynh_script_progression "Updating NGINX web server configuration..."
 ynh_config_change_url_nginx
 
 #=================================================
-# SPECIFIC MODIFICATIONS
-#=================================================
 # UPDATE SABNZBD CONFIGURATION
 #=================================================
 ynh_script_progression --message="Updating SABnzbd configuration..." --weight=1
@@ -28,8 +26,6 @@ if [ -f "$install_dir/config.ini" ]; then
     ynh_replace --match="^url_base = .*" --replace="url_base = $new_path" --file="$install_dir/config.ini"
     ynh_replace --match="^host_whitelist = .*" --replace="host_whitelist = $new_domain" --file="$install_dir/config.ini"
 fi
-
-#=================================================
 
 #=================================================
 # START SYSTEMD SERVICE
