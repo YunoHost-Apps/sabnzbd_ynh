@@ -11,7 +11,7 @@ It shall NOT be edited by hand.
 Newsreader for downloading, verifying and extracting files from Usenet
 
 [![🌐 Official app website](https://img.shields.io/badge/Official_app_website-darkgreen?style=for-the-badge)](https://sabnzbd.org)
-[![Version: 4.5.5~ynh2](https://img.shields.io/badge/Version-4.5.5~ynh2-rgb(18,138,11)?style=for-the-badge)](https://ci-apps.yunohost.org/ci/apps/sabnzbd/)
+[![Version: 4.5.5~ynh3](https://img.shields.io/badge/Version-4.5.5~ynh3-rgb(18,138,11)?style=for-the-badge)](https://ci-apps.yunohost.org/ci/apps/sabnzbd/)
 
 <div align="center">
 <a href="https://apps.yunohost.org/app/sabnzbd"><img height="100px" src="https://github.com/YunoHost/yunohost-artwork/raw/refs/heads/main/badges/neopossum-badges/badge_more_info_on_the_appstore.svg"/></a>
