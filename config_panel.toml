@@ -1,0 +1,43 @@
+#:schema https://github.com/YunoHost/apps/raw/main/schemas/config_panel.v1.schema.json
+
+version = "1.0"
+
+[main]
+name.en = "Main configuration"
+name.fr = "Configuration principale"
+services = ["__APP__"]
+
+    [main.backup]
+    name.en = "Backup configuration"
+    name.fr = "Configuration de la sauvegarde"
+    
+        [main.backup.backup_complete_downloads]
+        ask.en = "Backup completed downloads"
+        ask.fr = "Sauvegarder les téléchargements terminés"
+        type = "boolean"
+        yes = "true"
+        no = "false"
+        bind = "settings"
+        help.en = "Include the 'complete' folder (finished downloads) in backups. Warning: this can significantly increase backup size."
+        help.fr = "Inclure le dossier 'complete' (téléchargements terminés) dans les sauvegardes. Attention : cela peut augmenter considérablement la taille des backups."
+        
+        [main.backup.backup_incomplete_downloads]
+        ask.en = "Backup incomplete downloads"
+        ask.fr = "Sauvegarder les téléchargements en cours"
+        type = "boolean"
+        yes = "true"
+        no = "false"
+        bind = "settings"
+        help.en = "Include the 'incomplete' folder (downloads in progress) in backups. Disabling this can reduce backup size."
+        help.fr = "Inclure le dossier 'incomplete' (téléchargements en cours) dans les sauvegardes. Désactiver cette option peut réduire la taille des backups."
+        
+        [main.backup.backup_admin_data]
+        ask.en = "Backup admin data"
+        ask.fr = "Sauvegarder les données administratives"
+        type = "boolean"
+        yes = "true"
+        no = "false"
+        bind = "settings"
+        help.en = "Include the 'admin' folder in backups. Recommended to keep history and statistics."
+        help.fr = "Inclure le dossier 'admin' dans les sauvegardes. Recommandé pour conserver l'historique et les statistiques."
+
