@@ -7,7 +7,7 @@ name = "SABnzbd"
 description.en = "Newsreader for downloading, verifying and extracting files from Usenet"
 description.fr = "Lecteur de news pour télécharger, vérifier et extraire des fichiers depuis Usenet"
 
-version = "4.5.5~ynh2"
+version = "4.5.5~ynh3"
 
 maintainers = ["bowgartfield"]
 
