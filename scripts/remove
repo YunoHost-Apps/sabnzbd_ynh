@@ -6,22 +6,15 @@ source /usr/share/yunohost/helpers
 #=================================================
 # REMOVE SYSTEM CONFIGURATIONS
 #=================================================
-# REMOVE SYSTEMD SERVICE
-
-ynh_script_progression "Removing par2cmdline-turbo..."
-if [ -f "$par2_install_path/par2" ]; then
-    ynh_script_progression "par2cmdline-turbo found, removing..."
-    ynh_safe_rm "$par2_install_path/par2"
-	ynh_script_progression "par2cmdline-turbo removed"
-fi
-
-#=================================================
 ynh_script_progression "Removing system configurations related to $app..."
 
+if [ -f "$par2_install_path/par2" ]; then
+    ynh_script_progression "Removing par2cmdline-turbo..."
+    ynh_safe_rm "$par2_install_path/par2"
+fi
+
 # Remove the service from the list of services known by YunoHost (added from `yunohost service add`)
-if ynh_hide_warnings yunohost service status $app >/dev/null
-then
-	ynh_script_progression "Removing $app service integration..."
+if ynh_hide_warnings yunohost service status $app >/dev/null; then
 	yunohost service remove $app
 fi
 
