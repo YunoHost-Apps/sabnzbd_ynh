@@ -7,7 +7,7 @@ name = "SABnzbd"
 description.en = "Newsreader for downloading, verifying and extracting files from Usenet"
 description.fr = "Lecteur de news pour télécharger, vérifier et extraire des fichiers depuis Usenet"
 
-version = "4.5.5~ynh3"
+version = "4.5.5~ynh4"
 
 maintainers = ["bowgartfield"]
 
@@ -27,7 +27,6 @@ architectures = ["amd64", "armhf", "arm64"]
 multi_instance = true
 
 ldap = false
-
 sso = false
 
 disk = "100M"
@@ -71,9 +70,9 @@ ram.runtime = "200M"
 
         autoupdate.upstream = "https://github.com/animetosho/par2cmdline-turbo"
         autoupdate.strategy = "latest_github_release"
-        autoupdate.asset.amd64 = ".*\\-amd64.zip"
-        autoupdate.asset.arm64 = ".*\\-arm64.zip"
-        autoupdate.asset.armhf = ".*\\-armhf.zip"
+        autoupdate.asset.amd64 = ".*\\-linux-amd64.zip"
+        autoupdate.asset.arm64 = ".*\\-linux-arm64.zip"
+        autoupdate.asset.armhf = ".*\\-linux-armhf.zip"
 
     [resources.system_user]
 
@@ -86,6 +85,11 @@ ram.runtime = "200M"
     main.url = "/"
     main.protected = true
     main.allowed = "admins"
+
+    api.url = "/api"
+    api.allowed = "visitors"
+    api.show_tile = false
+    api.protected = true
 
     [resources.ports]
 

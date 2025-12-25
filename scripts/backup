@@ -36,22 +36,17 @@ if [ "$backup_admin" = "true" ]; then
 fi
 
 #=================================================
-# BACKUP THE NGINX CONFIGURATION
+# BACKUP SYSTEM CONFIGURATION
 #=================================================
 
+# Backup the NGINX configuration
 ynh_backup "/etc/nginx/conf.d/$domain.d/$app.conf"
 
-#=================================================
-# BACKUP LOGROTATE
-#=================================================
-
-ynh_backup "/etc/logrotate.d/$app"
-
-#=================================================
-# BACKUP SYSTEMD
-#=================================================
-
+# Backup the systemd service unit
 ynh_backup "/etc/systemd/system/$app.service"
+
+# Backup the logrotate configuration
+ynh_backup "/etc/logrotate.d/$app"
 
 #=================================================
 # END OF SCRIPT
