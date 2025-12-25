@@ -86,6 +86,11 @@ ram.runtime = "200M"
     main.protected = true
     main.allowed = "admins"
 
+    api.url = "/api"
+    api.allowed = "visitors"
+    api.show_tile = false
+    api.protected = true
+
     [resources.ports]
 
     [resources.apt]
