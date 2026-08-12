@@ -7,7 +7,7 @@ name = "SABnzbd"
 description.en = "Newsreader for downloading, verifying and extracting files from Usenet"
 description.fr = "Lecteur de news pour télécharger, vérifier et extraire des fichiers depuis Usenet"
 
-version = "5.0.4~ynh1"
+version = "5.1.0~ynh1"
 
 maintainers = ["bowgartfield"]
 
@@ -55,8 +55,8 @@ ram.runtime = "200M"
         # This will pre-fetch the asset which can then be deployed during the install/upgrade scripts with :
         #    ynh_setup_source --dest_dir="$install_dir"
         # You can also define other assets than "main" and add --source_id="foobar" in the previous command
-        url = "https://github.com/sabnzbd/sabnzbd/archive/refs/tags/5.0.4.tar.gz"
-        sha256 = "7093f1ff6229171804ce65138750fe42757236d78ca75146e8432bb0764fc82e"
+        url = "https://github.com/sabnzbd/sabnzbd/archive/refs/tags/5.1.0.tar.gz"
+        sha256 = "33ed74043cd31d63222ed5542affaa6128f1f3792e18361fd545d21924ce54f2"
         autoupdate.strategy = "latest_github_release"
 
         [resources.sources.par2]
