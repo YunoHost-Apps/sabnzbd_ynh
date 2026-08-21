@@ -7,7 +7,7 @@ name = "SABnzbd"
 description.en = "Newsreader for downloading, verifying and extracting files from Usenet"
 description.fr = "Lecteur de news pour télécharger, vérifier et extraire des fichiers depuis Usenet"
 
-version = "5.1.1~ynh1"
+version = "5.1.1~ynh2"
 
 maintainers = ["bowgartfield"]
 
@@ -61,12 +61,12 @@ ram.runtime = "200M"
 
         [resources.sources.par2]
         in_subdir = false
-        amd64.url = "https://github.com/animetosho/par2cmdline-turbo/releases/download/v1.4.0/par2cmdline-turbo-1.4.0-linux-amd64.zip"
-        amd64.sha256 = "0be495172b4b8aeabda39c493e47de652813fab88ae745c8633e901c05494281"
-        arm64.url = "https://github.com/animetosho/par2cmdline-turbo/releases/download/v1.4.0/par2cmdline-turbo-1.4.0-linux-arm64.zip"
-        arm64.sha256 = "1bb2acb2c549bb3a2e91be3ac6291b00d4b657a56ab23f763f2161ffe7df0fcd"
-        armhf.url = "https://github.com/animetosho/par2cmdline-turbo/releases/download/v1.4.0/par2cmdline-turbo-1.4.0-linux-armhf.zip"
-        armhf.sha256 = "d9ef6ab71c7c4078230f904a0a50d2296f1bc8bd8074a50d2110f6a642fc8a39"
+        amd64.url = "https://github.com/animetosho/par2cmdline-turbo/releases/download/v1.5.0/par2cmdline-turbo-1.5.0-linux-amd64.zip"
+        amd64.sha256 = "5a9f64386813456693c2ea1fb7649436fe7544bbdf97fd73b3483dfcc8aca464"
+        arm64.url = "https://github.com/animetosho/par2cmdline-turbo/releases/download/v1.5.0/par2cmdline-turbo-1.5.0-linux-arm64.zip"
+        arm64.sha256 = "3afb2f0b319fc4e6353c6d4261994757cbe3189f968a72420b4ba1d63f9c9a70"
+        armhf.url = "https://github.com/animetosho/par2cmdline-turbo/releases/download/v1.5.0/par2cmdline-turbo-1.5.0-linux-armhf.zip"
+        armhf.sha256 = "ca41c348c60368afbcd3f2cc76eafcd825616391a388d6646224ecd93f6ce2a7"
 
         autoupdate.upstream = "https://github.com/animetosho/par2cmdline-turbo"
         autoupdate.strategy = "latest_github_release"
